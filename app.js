@@ -2,57 +2,72 @@ const express = require('express');
 const app = express();
 const ExpressError = require('./expressError');
 
-const { convertAndValidateNumsArray, findMode, findMean, findMedian } = require('./helpers');
+const { stringsAsNumbers, findMode, findMean, findMedian } = require('./functions');
 
-app.get('/mean', function(req, res, next) {
-  if (!req.query.nums) {
-    throw new ExpressError('You must pass a query key of nums with a comma-separated list of numbers.', 400)
+
+///////////////////////////////////////
+// Mean Operation
+
+app.get('/mean', function(req, res) {
+  // Make sure we enter a list of numbers
+  if (!req.query.numberList) {
+    throw new ExpressError('Enter a list of number for the request: /mean?numberList=num1,num2,num3...', 400)
   }
-  let numsAsStrings = req.query.nums.split(',');
-  // check if anything bad was put in
-  let nums = convertAndValidateNumsArray(numsAsStrings);
-  if (nums instanceof Error) {
-    throw new ExpressError(nums.message);
+  let stringArray = req.query.numberList.split(',');
+
+  // Convert strings to numbers if possible
+  let numberArray = stringsAsNumbers(stringArray);
+  if (numberArray instanceof Error){
+    throw new Error(numberArray.message);
   }
-
-
-  let result = {
+    let result = {
     operation: "mean",
-    result: findMean(nums)
-  }
-
-  return res.send(result);
+    result: findMean(numberArray)
+    }
+    
+    return res.send(result);
 });
 
-app.get('/median', function(req, res, next) {
-  if (!req.query.nums) {
-    throw new ExpressError('You must pass a query key of nums with a comma-separated list of numbers.', 400)
+
+///////////////////////////////////////
+// Median Operation
+
+app.get('/median', function(req, res) {
+  // Make sure we enter a list of numbers
+  if (!req.query.numberList) {
+    throw new ExpressError('Enter a list of number for the request: /mean?numberList=num1,num2,num3...', 400)
   }
-  let numsAsStrings = req.query.nums.split(',');
-  // check if anything bad was put in
-  let nums = convertAndValidateNumsArray(numsAsStrings);
-  if (nums instanceof Error) {
-    throw new ExpressError(nums.message);
+  let stringArray = req.query.numberList.split(',');
+
+  // Convert strings to numbers if possible
+  let numberArray = stringsAsNumbers(stringArray);
+  if (numberArray instanceof Error){
+    throw new Error(numberArray.message);
   }
 
   let result = {
     operation: "median",
-    result: findMedian(nums)
+    result: findMedian(numberArray)
   }
 
   return res.send(result);
-  
 });
 
-app.get('/mode', function(req, res, next) {
-  if (!req.query.nums) {
-    throw new ExpressError('You must pass a query key of nums with a comma-separated list of numbers.', 400)
+
+///////////////////////////////////////
+// Mode Operation
+
+app.get('/mode', function(req, res) {
+  // Make sure we enter a list of numbers
+  if (!req.query.numberList) {
+    throw new ExpressError('Enter a list of number for the request: /mean?numberList=num1,num2,num3...', 400)
   }
-  let numsAsStrings = req.query.nums.split(',');
-  // check if anything bad was put in
-  let nums = convertAndValidateNumsArray(numsAsStrings);
-  if (nums instanceof Error) {
-    throw new ExpressError(nums.message);
+  let stringArray = req.query.numberList.split(',');
+
+  // Convert strings to numbers if possible
+  let numberArray = stringsAsNumbers(stringArray);
+  if (numberArray instanceof Error){
+    throw new Error(numberArray.message);
   }
 
   let result = {
@@ -61,9 +76,9 @@ app.get('/mode', function(req, res, next) {
   }
 
   return res.send(result);
-
- 
 });
+
+
 
 /** general error handler */
 
@@ -86,6 +101,7 @@ app.use(function (err, req, res, next) {
 });
 
 
+//////////////////////////////////////
 app.listen(3000, function() {
   console.log(`Server starting on port 3000`);
 });
